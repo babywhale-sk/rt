@@ -1199,6 +1199,37 @@ our %META;
     ServiceAgreements => {
         Type => 'HASH',
     },
+
+    PriorityAsStringQueues => {
+        Type => 'HASH',
+        PostLoadCheck => sub {
+            my $self = shift;
+
+            my $numerical_priority = $self->Get('NumericalPriority');
+            my %default_config = $self->Get('DefaultPriorityAsString');
+            my %user_config = $self->Get('PriorityAsString');
+            my %config = $self->Get('PriorityAsStringQueues');
+
+            if ($numerical_priority) {
+               %default_config = undef;
+            } elsif (%user_config) {
+               %default_config = %user_config;
+            }
+
+            my $queues = RT::Queues->new(RT->SystemUser);
+            $queues->Limit(
+                FIELD    => 'Name',
+                OPERATOR => '!=',
+                VALUE    => '___Approvals',
+            );
+            my @queue_configs = keys %config;
+            while (my $queue = $queues->Next) {
+               $config{$queue->Name} = {%default_config} unless defined $config{$queue->Name};
+            }
+
+            $self->Set( 'PriorityAsStringQueues', %config );
+        },
+    },
 );
 my %OPTIONS = ();
 my @LOADED_CONFIGS = ();
