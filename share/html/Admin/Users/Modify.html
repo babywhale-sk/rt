@@ -232,6 +232,8 @@
 % }
 </form>
 
+<& /Elements/MyRelatedInfo &>
+
 <%INIT>
 
 my $UserObj = RT::User->new($session{'CurrentUser'});
@@ -306,6 +308,11 @@ if ( $UserObj->Id ) {
     if ( $id eq 'new' && !$status ) {
         push @results, loc("A password was not set, so user won't be able to login.");
     }
+}
+
+if ( $ARGS{'Anonymize'} ) {
+    my ($ret, $msg) = $UserObj->AnonymizeUser(clear_customfields => $ARGS{'clear_customfields'});
+    RT::Logger->error($msg) unless $ret;
 }
 
 # This code does automatic redirection if any updates happen.
