@@ -319,6 +319,15 @@ sub Create {
     my ($id, $msg) = eval {
         # catch and rethrow on the outside so we can provide more info
         local $SIG{__DIE__};
+
+        # Make sure data passed to Create are UTF-8 decoded. Without this,
+        # data could be be wrongly encoded on Pg.
+        for my $field ( keys %$data ) {
+            if ( $data->{$field} && !utf8::is_utf8( $data->{$field} ) ) {
+                utf8::decode( $data->{$field} );
+            }
+        }
+
         $obj->DBIx::SearchBuilder::Record::Create(
             %{$data}
         );
