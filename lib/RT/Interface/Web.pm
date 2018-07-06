@@ -135,6 +135,7 @@ sub JSFiles {
       assets.js
       /static/RichText/ckeditor.js
       dropzone.min.js
+      user-time.js
       }, RT->Config->Get('JSFiles');
 }
 

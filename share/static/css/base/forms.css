@@ -280,3 +280,7 @@ ul.selectable a {
     font-weight: bold;
     text-decoration: underline;
 }
+
+.user-time-worked-input {
+    width: 17em;
+}
